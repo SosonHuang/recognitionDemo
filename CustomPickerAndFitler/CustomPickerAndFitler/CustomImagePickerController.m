@@ -63,6 +63,8 @@
         UIButton *deviceBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [deviceBtn setBackgroundImage:deviceImage forState:UIControlStateNormal];
         [deviceBtn addTarget:self action:@selector(swapFrontAndBackCameras:) forControlEvents:UIControlEventTouchUpInside];
+        
+        
         [deviceBtn setFrame:CGRectMake(250, 30, deviceImage.size.width, deviceImage.size.height)];
         
 //        UIView *PLCameraView = [self findView:viewController.view withName:@"PLCameraView"];
@@ -80,7 +82,7 @@
         
         UIImageView *cameraOverlayView = [[UIImageView alloc]
                                           initWithImage:[UIImage imageNamed:@"biaoiiage.png"]];
-        cameraOverlayView.frame = CGRectMake(10, 25, 300, 400);
+        cameraOverlayView.frame = CGRectMake(10, 70, 300, 400);
         [viewController.view addSubview:cameraOverlayView];
         
         [self setShowsCameraControls:NO];
@@ -149,6 +151,7 @@
 #pragma mark - ButtonAction Methods
 
 - (IBAction)swapFrontAndBackCameras:(id)sender {
+    
     if (self.cameraDevice ==UIImagePickerControllerCameraDeviceRear ) {
         self.cameraDevice = UIImagePickerControllerCameraDeviceFront;
     }else {

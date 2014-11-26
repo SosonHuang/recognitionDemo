@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TestViewController : UIViewController
+@interface TestViewController : UIViewController<UIScrollViewDelegate>
 @property(nonatomic,strong)UIImageView *hechengImage;
 @property(nonatomic,strong)UIImage *testImage;
 @end

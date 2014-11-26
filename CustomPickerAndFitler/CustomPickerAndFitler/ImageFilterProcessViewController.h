@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 @protocol ImageFitlerProcessDelegate;
-@interface ImageFilterProcessViewController : UIViewController<UIGestureRecognizerDelegate,UIImagePickerControllerDelegate>
+@interface ImageFilterProcessViewController : UIViewController<UIGestureRecognizerDelegate,UIScrollViewDelegate,UIImagePickerControllerDelegate>
 {
     UIImageView *rootImageView;
     UIScrollView *scrollerView;

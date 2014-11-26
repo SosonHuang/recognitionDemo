@@ -8,6 +8,8 @@
 
 #import "TestViewController.h"
 #import "AFNetworking.h"
+#import "UIImageView+WebCache.h"
+
 @interface TestViewController ()
 
 @end
@@ -30,8 +32,8 @@
     
     
     
-    self.hechengImage=[[UIImageView alloc]initWithFrame:CGRectMake(10, 50, 300, 400)];
-    
+    self.hechengImage=[[UIImageView alloc]initWithFrame:CGRectMake(10, 80, 300, 400)];
+
     self.hechengImage.image=  [self imageCompressForSize:self.testImage targetSize:CGSizeMake(300, 400)];
     
 //    self.hechengImage.image = self.testImage;
@@ -43,13 +45,24 @@
     
     
     
+    UIButton *closeBtn=[[UIButton alloc]initWithFrame:CGRectMake(20, 20, 60, 30)];
+    [closeBtn setTitle:@"关闭" forState:UIControlStateNormal];
+    [closeBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [closeBtn addTarget:self action:@selector(closeCon) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:closeBtn];
     
     
     UIImageWriteToSavedPhotosAlbum(self.hechengImage.image, self,
                                    @selector(image:didFinishSavingWithError:contextInfo:), nil);
     
+  
     
     
+    
+}
+
+-(void)closeCon{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 
@@ -123,6 +136,31 @@
         
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"Success: %@", responseObject);
+        
+        NSString *requestTmp = [NSString stringWithString:operation.responseString];
+        NSData *resData = [[NSData alloc] initWithData:[requestTmp dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        NSError *error;
+        NSDictionary *jsonParsed = [NSJSONSerialization JSONObjectWithData:resData
+                                                                   options:NSJSONReadingMutableContainers error:&error];
+        NSArray *arr=[jsonParsed objectForKey:@"data"];
+        NSLog(@"arr %i",arr.count);
+        if (arr.count==0) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"没有匹配图片！"
+                                                            message:@"NO NO NO" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+            [alert show];
+            return ;
+        }
+        
+        [self createScrollView:arr];
+        self.hechengImage.hidden=YES;
+        
+        
+//        NSLog(@"%@",[[arr objectAtIndex:0]objectForKey:@"img"]);
+//        
+//        [self.hechengImage setImageWithURL:[[arr objectAtIndex:0]objectForKey:@"img"] placeholderImage:[UIImage imageNamed:@"placeholder.png"]  options:SDWebImageProgressiveDownload];
+
+        
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"Error: %@", error);
     }];
@@ -145,6 +183,29 @@
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"保存图片结果提示"
                                                     message:msg delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
     [alert show];
+}
+
+
+-(void)createScrollView:(NSArray *)arr{
+   UIScrollView *sv  =[[UIScrollView alloc] initWithFrame:CGRectMake(10, 40,self.view.frame.size.width, 500)];
+    sv.pagingEnabled = YES;
+    
+    sv.showsVerticalScrollIndicator = YES;
+    
+    sv.showsHorizontalScrollIndicator = YES;
+    sv.delegate = self;
+    
+    CGSize newSize = CGSizeMake(self.view.frame.size.width * arr.count, 500);
+    [sv setContentSize:newSize];
+    
+    for (int i=0; i<arr.count; i++) {
+        UIImageView *img=[[UIImageView alloc]initWithFrame:CGRectMake(i * 300+10, 40, 320, 500)];
+        [img setImageWithURL:[[arr objectAtIndex:i]objectForKey:@"img"] placeholderImage:[UIImage imageNamed:@"placeholder.png"]  options:SDWebImageProgressiveDownload];
+        [sv addSubview:img];
+    }
+  
+    
+    [self.view addSubview: sv];
 }
 
 
